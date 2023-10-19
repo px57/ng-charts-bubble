@@ -1,10 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChartBubbleComponent } from './components/chart-bubble/chart-bubble.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    ChartBubbleComponent
+  ],
   imports: [
-    CommonModule
-  ]
+  ],
+  exports: [
+    ChartBubbleComponent
+  ],
 })
 export class ChartsBubbleModule { }
