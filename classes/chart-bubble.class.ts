@@ -94,8 +94,6 @@ export class CellContentObject {
      * @description: 
      */
     private set_title(): void {
-        console.log(this.centerOfCircle);
-        console.log(this.circleDrawType);
         this.get_element_in_cellContent('use_case_text').innerHTML = this.circleDrawType.data.title;
     }
 
@@ -193,7 +191,6 @@ export class CellContentObject {
     private set_event_eye_opened(): void {
         const eye_opened = this.get_openeye();
         eye_opened.addEventListener('click', () => {
-            console.log('set_event_eye_opened');
             this.opened = true;
             this.redraw();
         });
@@ -214,7 +211,6 @@ export class CellContentObject {
     private set_event_eye_closed(): void {
         const eye_closed = this.get_closeeye();
         eye_closed.addEventListener('click', () => {
-            console.log('set_event_eye_closed');
             this.opened = false;
             this.redraw();
         });
@@ -297,14 +293,14 @@ export class CellContentObject {
     private create_grey_right_container(): boolean {
         // TODO: clone 
         const svgDocument = (this.objectElement as any).contentDocument;
-        const cellContentGroup = this.get_grey_left_container();
-        const clonedGroup = cellContentGroup.cloneNode(true);
+        const cellContentGroup = svgDocument.getElementById(`cellContent`);
+        const grey_container = this.get_grey_left_container();
+        const clonedGroup = grey_container.cloneNode(true);
         const newId = 'grey_rigth_container';
-        if (clonedGroup === null) {
-            return false;
-        }
-        clonedGroup.setAttribute('id', newId);
-        svgDocument.getElementById('cellContentVioletContainer').appendChild(clonedGroup);
+
+        (clonedGroup as any).setAttribute('id', newId);
+        (clonedGroup as any).setAttribute('transform', ` translate(29, 0)`);
+        cellContentGroup.appendChild(clonedGroup);
         // right_container = clonedGroup;
         return true;       
     }
