@@ -52,7 +52,7 @@ export class CirclePosition {
      * @description:
      */
     public get_rayon(): number {
-        return 10;
+        return this.circleDrawType.r * this.get_one_percent().x;
     }
 
     /**
@@ -77,8 +77,8 @@ export class CirclePosition {
         let centerOfCircle = this.get_center_of_circle();
         let rayon = this.get_rayon();
         return {
-            x: centerOfCircle.x - rayon,
-            y: centerOfCircle.y - rayon,
+            x: centerOfCircle.x ,
+            y: centerOfCircle.y ,
         };
     }
 
@@ -112,24 +112,25 @@ export class CirclePosition {
      */
     public whereasspace__toboxcontainer(): CoordXY {
         const centerOfCircle = this.get_center_of_circle();
+    
         if (this.hasspaceright__toboxcontainer()) {
             return {
-                x: centerOfCircle.x + this.get_rayon(),
+                x: centerOfCircle.x,
                 y: centerOfCircle.y,
             };
         } else if (this.hasspacebottom__toboxcontainer()) {
             return {
                 x: centerOfCircle.x,
-                y: centerOfCircle.y + this.get_rayon(),
+                y: centerOfCircle.y ,
             };
         } else if (this.hasspacetop__toboxcontainer()) {
             return {
                 x: centerOfCircle.x,
-                y: centerOfCircle.y - this.get_rayon(),
+                y: centerOfCircle.y ,
             };
         } else if (this.hasspaceleft__toboxcontainer()) {
             return {
-                x: centerOfCircle.x - this.get_rayon(),
+                x: centerOfCircle.x ,
                 y: centerOfCircle.y,
             };
         }

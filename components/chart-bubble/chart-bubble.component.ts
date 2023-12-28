@@ -53,14 +53,17 @@ export class ChartBubbleComponent implements OnInit {
 
   /**
    * @description: 
-   * translate(-20, -38) -> position minimum en haut a gauche
-   * translate(148, 129) -> position maximum en bas a droite
+   * translate(-12, -14) -> position minimum en haut a gauche
+   * translate(88, 88) -> position maximum en bas a droite
    */
   @Input()
   public circle_list: Array<CircleDrawType> = [
     {
       data: {
         title: 'oeauoeu',
+        left_container: 'oeuoeu',
+        right_container: '##$##',
+        background_cell_color: '#FF0000',
       },
       percent_x: 0,
       percent_y: 20,
@@ -70,6 +73,9 @@ export class ChartBubbleComponent implements OnInit {
     {
       data: {
         title: 'eoauoeuaoe',
+        left_container: '###',
+        right_container: 'oeauoeu',
+        background_cell_color: '#00FF00',
       },
       percent_x: 20,
       percent_y: 70,
@@ -111,10 +117,15 @@ export class ChartBubbleComponent implements OnInit {
     const svgUrl = 'assets/svg/chart-bubble_optimized.svg';
 
     // Chargez le contenu SVG dans le conteneur
-    this.renderer.setProperty(this.svgContainer.nativeElement, 'innerHTML', `<object type="image/svg+xml" data="${svgUrl}" ></object>`);
+    this.renderer.setProperty(
+      this.svgContainer.nativeElement, 
+      'innerHTML', 
+      `<object type="image/svg+xml" data="${svgUrl}" ></object>`
+    );
 
     // Attachez un événement au contenu SVG chargé
     const objectElement = this.svgContainer.nativeElement.querySelector('object');
+    
     objectElement.addEventListener('load', () => {
       this.handleSVGLoaded(objectElement);
     });
@@ -144,43 +155,6 @@ export class ChartBubbleComponent implements OnInit {
   }
 
   /**
-   * @description: Ici ont va veiller a la generation de la liste des commentaires lier au cellule.
-   */
-  public contentCellManage(objectElement: HTMLElement, index: number = 0) {
-    // Récupérez le document SVG
-    const svgDocument = (objectElement as any).contentDocument;
-    const cellContentGroup = svgDocument.getElementById('cellContent');
-    const clonedGroup = cellContentGroup.cloneNode(true);
-    const newId = 'cellContentClone';
-    clonedGroup.setAttribute('id', newId);
-
-    svgDocument.getElementById('graphContainer').appendChild(clonedGroup);
-
-    const clonedGroup2 = cellContentGroup.cloneNode(true);
-    const newId2 = 'cellContentClone2';
-    clonedGroup2.setAttribute('id', newId2);
-
-    svgDocument.getElementById('graphContainer').appendChild(clonedGroup2);
-
-    clonedGroup2.setAttribute('transform', `translate(50, 50)`);
-
-    const clonedGroup3 = cellContentGroup.cloneNode(true);
-    const newId3 = 'cellContentClone3';
-    clonedGroup3.setAttribute('id', newId3);
-    
-    svgDocument.getElementById('graphContainer').appendChild(clonedGroup3);
-
-    clonedGroup3.setAttribute('transform', `translate(100, 50)`);
-
-    clonedGroup.setAttribute('transform', `translate(100, 100)`);
-    clonedGroup.addEventListener('click', () => {
-      alert('Cercle cliqué !');
-    });
-
-
-  }
-
-  /**
    * @description: 
    */
   public circleGenerate(objectElement: HTMLElement) {
@@ -196,5 +170,54 @@ export class ChartBubbleComponent implements OnInit {
       ));
       i ++;
     }
+  }
+
+  /**
+   * @description: Download the picture of the chart. 
+   */
+  public downloadSvgAsPng() {
+    const objectElement = this.svgContainer.nativeElement.querySelector('object');
+    objectElement.contentDocument.documentElement.cloneNode(true);
+
+    // Récupérer le contenu SVG modifié
+    const svgElement = objectElement.contentDocument.documentElement;
+    const serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svgElement);
+
+    // Ajouter des déclarations de namespace manquantes
+    if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+
+    // Encoder le SVG en URI
+    const imgData = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+
+    // Convertir le SVG en Canvas
+    const img = new Image();
+    const canvas = this.renderer.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.drawImage(img, 0, 0);
+      
+      // Convertir le Canvas en URL de données PNG
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // Créer un lien pour le téléchargement
+      const link = this.renderer.createElement('a');
+      this.renderer.setAttribute(link, 'href', dataUrl);
+      this.renderer.setAttribute(link, 'download', 'image.png');
+
+      // Déclencher le téléchargement
+      link.click();
+      this.renderer.removeChild(document.body, link);
+    };
+
+    img.src = imgData;
   }
 }
